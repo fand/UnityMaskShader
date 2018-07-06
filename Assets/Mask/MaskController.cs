@@ -19,6 +19,10 @@ public class MaskController : MonoBehaviour {
     const float HEIGHT_MIN = 0.01f;
     const float HEIGHT_MAX = 3.0f;
 
+    const float ROTATION_INIT = 0.0f;
+    const float ROTATION_MIN = -180.0f;
+    const float ROTATION_MAX = 180.0f;
+
     [SerializeField, Range(BLUR_MIN, BLUR_MAX)]
     public float blur = BLUR_INIT;
 
@@ -30,6 +34,9 @@ public class MaskController : MonoBehaviour {
 
     [SerializeField, Range(HEIGHT_MIN, HEIGHT_MAX)]
     public float height = HEIGHT_INIT;
+
+    [SerializeField, Range(ROTATION_MIN, ROTATION_MAX)]
+    public float rotation = ROTATION_INIT;
 
     [SerializeField]
     public string prefsKey;
@@ -54,16 +61,14 @@ public class MaskController : MonoBehaviour {
         squareness = PlayerPrefs.GetFloat(prefsKey + ":maskSquareness", squareness);
         width = PlayerPrefs.GetFloat(prefsKey + ":maskWidth", width);
         height = PlayerPrefs.GetFloat(prefsKey + ":maskHeight", height);
+        rotation = PlayerPrefs.GetFloat(prefsKey + ":maskRotation", rotation);
 
         Invoke("UpdateMask", 0);
     }
 
     private void Update()
     {
-        bool shift = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
-        bool ctrl = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
-
-        if (shift)
+        if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
         {
             if (Input.GetKey(KeyCode.UpArrow))
             {
@@ -77,17 +82,18 @@ public class MaskController : MonoBehaviour {
             }
             if (Input.GetKey(KeyCode.LeftArrow))
             {
-                squareness = Mathf.Min(squareness + 0.003f, SQUARENESS_MAX);
+                squareness = Mathf.Max(squareness - 0.003f, SQUARENESS_MIN);
                 UpdateMask();
             }
             if (Input.GetKey(KeyCode.RightArrow))
             {
-                squareness = Mathf.Max(squareness - 0.003f, SQUARENESS_MIN);
+                squareness = Mathf.Min(squareness + 0.003f, SQUARENESS_MAX);
                 UpdateMask();
             }
         }
 
-        if (ctrl) {
+        if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
+        {
             if (Input.GetKey(KeyCode.UpArrow))
             {
                 height = Mathf.Min(height + 0.003f, HEIGHT_MAX);
@@ -100,12 +106,26 @@ public class MaskController : MonoBehaviour {
             }
             if (Input.GetKey(KeyCode.LeftArrow))
             {
-                width = Mathf.Max(width + 0.003f, WIDTH_MAX);
+                width = Mathf.Max(width - 0.003f, WIDTH_MIN);
                 UpdateMask();
             }
             if (Input.GetKey(KeyCode.RightArrow))
             {
-                width = Mathf.Max(width - 0.003f, WIDTH_MIN);
+                width = Mathf.Min(width + 0.003f, WIDTH_MAX);
+                UpdateMask();
+            }
+        }
+
+        if (Input.GetKey(KeyCode.R))
+        {
+            if (Input.GetKey(KeyCode.UpArrow))
+            {
+                rotation = Mathf.Min(rotation + 0.5f, ROTATION_MAX);
+                UpdateMask();
+            }
+            if (Input.GetKey(KeyCode.DownArrow))
+            {
+                rotation = Mathf.Max(rotation - 0.5f, ROTATION_MIN);
                 UpdateMask();
             }
         }
@@ -131,11 +151,13 @@ public class MaskController : MonoBehaviour {
         material.SetFloat("_MaskSquareness", squareness);
         material.SetFloat("_MaskWidth", width);
         material.SetFloat("_MaskHeight", height);
+        material.SetFloat("_MaskRotation", rotation);
 
         PlayerPrefs.SetFloat(prefsKey + ":maskBlur", blur);
         PlayerPrefs.SetFloat(prefsKey + ":maskSquareness", squareness);
         PlayerPrefs.SetFloat(prefsKey + ":maskWidth", width);
         PlayerPrefs.SetFloat(prefsKey + ":maskHeight", height);
+        PlayerPrefs.SetFloat(prefsKey + ":maskRotation", rotation);
         PlayerPrefs.Save();
     }
 
@@ -150,5 +172,6 @@ public class MaskController : MonoBehaviour {
         squareness = SQUARENESS_INIT;
         width = WIDTH_INIT;
         height = HEIGHT_INIT;
+        rotation = ROTATION_INIT;
     }
 }
