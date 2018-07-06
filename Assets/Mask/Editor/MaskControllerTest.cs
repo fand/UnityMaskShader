@@ -62,6 +62,7 @@ public class MaskControllerTest
         o.AddComponent(typeof(MaskController));
 
         var mask = o.GetComponent<MaskController>();
+        mask.shader = null;
         mask.prefsKey = "test";
 
         Assert.That(() => {
