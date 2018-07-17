@@ -5,6 +5,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+[ExecuteInEditMode]
 public class MaskController : MonoBehaviour {
     const float BLUR_INIT = 1.0f;
     const float BLUR_MIN = 0.001f;
